@@ -29,8 +29,9 @@ function main() {
   function render(time) {
     time *= 0.001;  // convert time to seconds
    
-    cube.rotation.x = time;
-    cube.rotation.y = time;
+    //cube.rotation.x = time;
+    //cube.rotation.y = time;
+    //camera.rotation.y  = time;
    
     renderer.render(scene, camera);
    
