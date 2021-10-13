@@ -10,7 +10,7 @@ function main() {
   const far = 5;
   const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
   camera.position.z = 3;
-  camera.position.y = 2;
+  camera.position.y = 1.25;
 
   const scene = new THREE.Scene();
 
@@ -23,6 +23,10 @@ function main() {
 
   const cube = new THREE.Mesh(geometry, material);
   scene.add(cube);
+
+  const light1 = new THREE.PointLight(0xff80C0, 2, 0);
+  light1.position.set(200, 100, 300);
+  scene.add(light1);
 
   renderer.render(scene, camera);
 
@@ -49,9 +53,10 @@ function main() {
 
 
     resizeCanvasToDisplaySize();
-    //cube.rotation.x = time;
-    //cube.rotation.y = time;
-    camera.rotation.y  = time;
+    cube.rotation.x = time;
+    cube.rotation.y = time;
+    
+    
    
     renderer.render(scene, camera);
    
