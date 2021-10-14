@@ -1,6 +1,6 @@
 import * as THREE from "https://threejsfundamentals.org/threejs/resources/threejs/r125/build/three.module.js";
 import { terrainGeometry, makeInstance } from "./terrain.js";
-
+import { OrbitControls } from "./threejs-addons/OrbitControls.js";
 function main() {
   const canvas = document.querySelector("#c");
   const renderer = new THREE.WebGLRenderer({ canvas });
@@ -8,10 +8,14 @@ function main() {
   const fov = 75;
   const aspect = 2; // the canvas default
   const near = 0.1;
-  const far = 5;
+  const far = 10;
   const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
   camera.position.z = 4;
   camera.position.y = 1;
+
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.update();
+  //controls.update() must be called after any manual changes to the camera's transform
 
   const scene = new THREE.Scene();
 
@@ -29,8 +33,8 @@ function main() {
   light1.position.set(3, 2, 3);
   scene.add(light1);
 
-  const terrain = makeInstance(terrainGeometry(64, [4, 4]), 0x58aca8);
-  terrain.position.set(0, -0.5, 0);
+  const terrain = makeInstance(terrainGeometry(32, [8, 8]), 0x58aca8);
+  //terrain.position.set(0, 0, 0);
   scene.add(terrain);
 
   renderer.render(scene, camera);
@@ -53,16 +57,20 @@ function main() {
       // update any render target sizes here
     }
   }
+
   function render(time) {
     time *= 0.001; // convert time to seconds
 
     resizeCanvasToDisplaySize();
     //cube.rotation.x = time;
-    cube.rotation.y = time;
+    //cube.rotation.y = time;
+    terrain.material.uniforms["u_time"].value =
+      ((new Date().getTime() % 1000) * 100) / (1000 * 100); //
 
     renderer.render(scene, camera);
 
     requestAnimationFrame(render);
+    controls.update();
   }
   requestAnimationFrame(render);
 }
