@@ -102,6 +102,7 @@ function render(time) {
     intersects[i].object.material.color = new THREE.Color(0x808080);
   }
   resizeCanvasToDisplaySize();
+
   camera.position.z += speedZ;
 
   //cube.rotation.x = time;

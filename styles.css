@@ -12,8 +12,9 @@
   height: 10%;
   width: 100%;
   text-align: center;
+  font-weight: bold;
   display: block;
-  opacity: 0.3;
+  opacity: 0.15;
   background-color: white;
 }
 #hover_down {
@@ -22,7 +23,8 @@
   height: 10%;
   width: 100%;
   text-align: center;
+  font-weight: bold;
   display: block;
-  opacity: 0.3;
+  opacity: 0.15;
   background-color: white;
 }
