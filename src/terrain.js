@@ -1,5 +1,6 @@
 import * as THREE from "https://threejsfundamentals.org/threejs/resources/threejs/r125/build/three.module.js";
 //import { BufferGeometryUtils } from "./BufferGeometryUtils.js";
+
 export function terrainGeometry(resolution, terrainDimensions) {
   const quadSize = [
     (0.5 * terrainDimensions[0]) / resolution[0],
@@ -50,17 +51,40 @@ export function terrainGeometry(resolution, terrainDimensions) {
   );
   return geometry;
 }
-export function makeInstance(geometry, color) {
-  const material = new THREE.MeshBasicMaterial({ color, wireframe: true }); //new THREE.MeshPhongMaterial({ color });
-  const mesh = new THREE.Mesh(geometry, terrainMaterial);
+export function makeInstance(terrainResolution, terrainSize) {
+  const loader = new THREE.FileLoader();
 
-  //BufferGeometryUtils.toTrianglesDrawMode(mesh, THREE.TriangleStripDrawMode);
-  return mesh;
+  return new Promise((resolve) => {
+    let vertexShader = undefined;
+    let fragmentShader = undefined;
+
+    const generateMesh = () => {
+      return new THREE.Mesh(
+        terrainGeometry(terrainResolution, terrainSize),
+        terrainMaterial(fragmentShader, vertexShader, terrainSize)
+      );
+    };
+    loader.load("./src/shaders/terrain.vert", (data) => {
+      vertexShader = data;
+      if (fragmentShader != null) {
+        resolve(generateMesh());
+      }
+    });
+    loader.load("./src/shaders/terrain.frag", (data) => {
+      fragmentShader = data;
+      if (vertexShader != null) {
+        resolve(generateMesh());
+      }
+    });
+  });
 }
-const terrainMaterial = new THREE.ShaderMaterial({
-  uniforms: {
-    u_time: { value: 1.0 },
-  },
-  vertexShader: document.getElementById("terrainVertexShader").textContent,
-  fragmentShader: document.getElementById("terrainFragmentShader").textContent,
-});
+const terrainMaterial = (fragmentShader, vertexShader, terrainSize) => {
+  return new THREE.ShaderMaterial({
+    uniforms: {
+      u_time: { value: 1.0 },
+      u_size: { value: terrainSize },
+    },
+    vertexShader,
+    fragmentShader,
+  });
+};

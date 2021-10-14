@@ -1,0 +1,28 @@
+#info {
+  position: absolute;
+  top: 10px;
+  width: 100%;
+  text-align: center;
+  z-index: 100;
+  display: block;
+}
+#hover_up {
+  position: absolute;
+  top: 0px;
+  height: 10%;
+  width: 100%;
+  text-align: center;
+  display: block;
+  opacity: 0.3;
+  background-color: white;
+}
+#hover_down {
+  position: absolute;
+  bottom: 0px;
+  height: 10%;
+  width: 100%;
+  text-align: center;
+  display: block;
+  opacity: 0.3;
+  background-color: white;
+}
