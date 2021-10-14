@@ -10,6 +10,7 @@
     <canvas id="c" style="display: block; width: 100vw; height: 100vh"></canvas>
     <script src="src/main.js" type="module"></script>
     <script type="x-shader/x-vertex" id="terrainVertexShader">
+      #define M_PI 3.14159265358979323846
       uniform float u_time;
 
       varying vec2 v_uv;
@@ -91,10 +92,29 @@
         return 2.2 * n_xyz;
       }
 
+      float rand(vec2 c){
+        return fract(sin(dot(c.xy ,vec2(12.9898,78.233))) * 43758.5453);
+      }
+
+      float noise(vec2 p, float freq ){
+        float unit = 100./freq;
+        vec2 ij = floor(p/unit);
+        vec2 xy = mod(p,unit)/unit;
+        //xy = 3.*xy*xy-2.*xy*xy*xy;
+        xy = .5*(1.-cos(M_PI*xy));
+        float a = rand((ij+vec2(0.,0.)));
+        float b = rand((ij+vec2(1.,0.)));
+        float c = rand((ij+vec2(0.,1.)));
+        float d = rand((ij+vec2(1.,1.)));
+        float x1 = mix(a, b, xy.x);
+        float x2 = mix(c, d, xy.x);
+        return mix(x1, x2, xy.y);
+      }
+
       void main() {
         vec3 pos = position;
-
-        pos.y =cnoise(vec3(pos.xz*100., u_time));
+        float continuousTime = sin(u_time*M_PI);
+        pos.y =(noise(vec2(pos.x/1.0,pos.z/1.0-continuousTime*200.),mix(10.,50.,continuousTime))-0.5)*4.-2.;
         v_uv = uv;
         gl_Position = projectionMatrix * modelViewMatrix * vec4( pos, 1.0 );
       }
@@ -104,9 +124,6 @@
     <script type="x-shader/x-fragment" id="terrainFragmentShader">
 
       uniform float u_time;
-
-
-      // position in texture [0.0, 1.0]^2
       in vec2 v_uv;
 
       bool isBorder(){

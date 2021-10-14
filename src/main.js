@@ -8,7 +8,7 @@ function main() {
   const fov = 75;
   const aspect = 2; // the canvas default
   const near = 0.1;
-  const far = 10;
+  const far = 100;
   const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
   camera.position.z = 4;
   camera.position.y = 1;
@@ -27,14 +27,14 @@ function main() {
   const material = new THREE.MeshPhongMaterial({ color: 0x44aa88 }); // greenish blue
 
   const cube = new THREE.Mesh(geometry, material);
-  scene.add(cube);
+  //scene.add(cube);
 
   const light1 = new THREE.PointLight(0xffff, 1, 10, 0.05);
   light1.position.set(3, 2, 3);
   scene.add(light1);
 
-  const terrain = makeInstance(terrainGeometry(32, [8, 8]), 0x58aca8);
-  //terrain.position.set(0, 0, 0);
+  const terrain = makeInstance(terrainGeometry([16, 40], [16, 40]), 0x58aca8);
+  terrain.position.set(0, 0, -12);
   scene.add(terrain);
 
   renderer.render(scene, camera);
@@ -65,7 +65,7 @@ function main() {
     //cube.rotation.x = time;
     //cube.rotation.y = time;
     terrain.material.uniforms["u_time"].value =
-      ((new Date().getTime() % 1000) * 100) / (1000 * 100); //
+      (new Date().getTime() % (1000 * 100)) / (1000 * 100); //
 
     renderer.render(scene, camera);
 
