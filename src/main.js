@@ -1,21 +1,15 @@
 import * as THREE from "https://threejsfundamentals.org/threejs/resources/threejs/r125/build/three.module.js";
-import { makeInstance } from "./terrain.js";
-import { OrbitControls } from "./threejs-addons/OrbitControls.js";
 
+import { OrbitControls } from "./threejs-addons/OrbitControls.js";
+import getCameraInstance from "./camera.js";
+import setupScene from "./scene.js";
 THREE.Cache.enabled = true;
 
 const canvas = document.querySelector("#c");
 const renderer = new THREE.WebGLRenderer({ canvas });
 
 // setup camera
-const fov = 75;
-const aspect = 2;
-const near = 0.1;
-const far = 100;
-const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-camera.lookAt(0, 5, -30);
-camera.position.z = 4;
-camera.position.y = 1;
+const camera = getCameraInstance();
 
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
@@ -44,38 +38,25 @@ function onMouseMove(event) {
   controls.maxPolarAngle = Math.PI / 2;*/
 //controls.update();
 
+let terrain = undefined;
+let selectables = undefined;
+let scene = undefined;
+
 // setup scene
-const scene = new THREE.Scene();
-const geometry = new THREE.PlaneGeometry(15, 7.5);
-const texture = new THREE.TextureLoader().load("./textures/hideThePain.jpg");
-texture.wrapS = THREE.RepeatWrapping;
-texture.wrapT = THREE.RepeatWrapping;
-texture.repeat.set(1, 1);
-const material = new THREE.MeshPhongMaterial({
-  side: THREE.DoubleSide,
-  map: texture,
-  color: 0xffffff,
-});
-const plane = new THREE.Mesh(geometry, material);
-plane.position.set(0, 5, -40);
 
-scene.add(plane);
+const init3D = async () => {
+  const environment = await setupScene();
+  console.log(environment);
+  terrain = environment.terrain;
+  scene = environment.scene;
+  selectables = environment.selectables;
+  renderer.render(scene, camera);
+  window.addEventListener("mousemove", onMouseMove, false);
 
-const light1 = new THREE.PointLight(0xffffff, 1, 80, 0.005);
-light1.position.set(0, 2, 3);
-scene.add(light1);
-
-let terrain = null;
-const loadTerrain = async () => {
-  terrain = await makeInstance([16, 64], [16, 64]);
-  terrain.position.set(0, 0, -12);
-  scene.add(terrain);
+  requestAnimationFrame(render);
 };
 
-loadTerrain();
-
-renderer.render(scene, camera);
-
+init3D();
 function resizeCanvasToDisplaySize() {
   const canvas = renderer.domElement;
   // look up the size the canvas is being displayed
@@ -92,12 +73,16 @@ function resizeCanvasToDisplaySize() {
     // update any render target sizes here
   }
 }
-console.log(camera);
+
 function render(time) {
   time *= 0.001; // convert time to seconds
   raycaster.setFromCamera(mouse, camera);
   const intersects = raycaster.intersectObjects(scene.children);
-  plane.material.color = new THREE.Color(0xffffff);
+
+  for (let i = 0; i < selectables.length; i++) {
+    selectables[i].material.color = new THREE.Color(0xffffff);
+  }
+
   for (let i = 0; i < intersects.length; i++) {
     intersects[i].object.material.color = new THREE.Color(0x808080);
   }
@@ -105,8 +90,6 @@ function render(time) {
 
   camera.position.z += speedZ;
 
-  //cube.rotation.x = time;
-  //cube.rotation.y = time;
   if (terrain != undefined) {
     terrain.material.uniforms["u_time"].value =
       (new Date().getTime() % (1000 * 100)) / (1000 * 100); //
@@ -114,7 +97,4 @@ function render(time) {
   renderer.render(scene, camera);
 
   requestAnimationFrame(render);
-  //controls.update();
 }
-window.addEventListener("mousemove", onMouseMove, false);
-requestAnimationFrame(render);
