@@ -41,7 +41,7 @@ function onMouseMove(event) {
 let terrain = undefined;
 let selectables = undefined;
 let scene = undefined;
-
+let light = undefined;
 // setup scene
 
 const init3D = async () => {
@@ -50,6 +50,7 @@ const init3D = async () => {
   terrain = environment.terrain;
   scene = environment.scene;
   selectables = environment.selectables;
+  light = environment.light;
   renderer.render(scene, camera);
   window.addEventListener("mousemove", onMouseMove, false);
 
@@ -89,7 +90,7 @@ function render(time) {
   resizeCanvasToDisplaySize();
 
   camera.position.z += speedZ;
-
+  light.position.z = camera.position.z;
   if (terrain != undefined) {
     terrain.material.uniforms["u_time"].value =
       (new Date().getTime() % (1000 * 100)) / (1000 * 100); //

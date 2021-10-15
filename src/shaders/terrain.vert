@@ -105,6 +105,7 @@
         vec3 pos = position;
         float continuousTime = sin(u_time*M_PI);
         pos.y =(noise(vec2(pos.x/1.0,pos.z/1.0/*-continuousTime*200.*/),mix(10.,50.,continuousTime))-0.5)*4.-2.;
+        
         v_uv = uv;
         global_uv = pos.xz/u_size;
         gl_Position = projectionMatrix * modelViewMatrix * vec4( pos, 1.0 );

@@ -80,6 +80,7 @@ export function makeInstance(terrainResolution, terrainSize) {
 }
 const terrainMaterial = (fragmentShader, vertexShader, terrainSize) => {
   return new THREE.ShaderMaterial({
+    side: THREE.DoubleSide,
     uniforms: {
       u_time: { value: 1.0 },
       u_size: { value: terrainSize },

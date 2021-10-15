@@ -6,7 +6,7 @@ export default function getCameraInstance() {
   const far = 100;
   const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
   camera.lookAt(0, 5, -30);
-  camera.position.z = 4;
+  camera.position.z = 20;
   camera.position.y = 1;
   return camera;
 }
